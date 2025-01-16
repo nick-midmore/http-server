@@ -63,7 +63,19 @@ namespace HttpServer
 
         private void stopServerBtn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                httpServer.Close();
 
+                thread.Abort();
+
+                startServerBtn.Enabled = true;
+                stopServerBtn.Enabled = false;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Could not stop the server");
+            }
         }
 
         private void ConnectionThread()
