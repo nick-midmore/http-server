@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -47,6 +48,9 @@ namespace HttpServer
 
                 thread = new Thread(new ThreadStart(this.ConnectionThread));
                 thread.Start();
+
+                startServerBtn.Enabled = false;
+                stopServerBtn.Enabled = true;
             }
             catch(Exception ex)
             {
@@ -64,14 +68,58 @@ namespace HttpServer
 
         private void ConnectionThread()
         {
-
+            try
+            {
+                IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, serverPort);
+                httpServer.Bind(endpoint);
+                httpServer.Listen(1);
+                StartListeningForConnection();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Could not start");
+            }
         }
 
         private void StartListeningForConnection()
         {
             while (true)
             {
+                DateTime time = DateTime.Now;
 
+                String data = "";
+                byte[] bytes = new byte[2048];
+
+                Socket client = httpServer.Accept();
+
+                while(true)
+                {
+                    int numBytes = client.Receive(bytes);
+                    data += Encoding.ASCII.GetString(bytes, 0, numBytes);
+
+                    if (data.IndexOf("\r\n") > -1)
+                        break;
+                }
+
+                serverLogsText.Invoke((MethodInvoker)delegate {
+                    serverLogsText.Text += "\r\n\r\n";
+                    serverLogsText.Text += data;
+                    serverLogsText.Text += "\n\n -------- End of request --------";
+                });
+
+                String resHeader = "HTTP/1.1 200 Ok\nServer: my_http_server\nContent-Type: text/html; charset: UTF-8\n\n";
+                String resBody = "<!DOCTYPE html> " +
+                    "<html><head><title>My Server</title></head>" +
+                    "<body>" +
+                    "<h4>Server Time: " + time.ToString() + "</h4>" +
+                    "</body></html>";
+                String resStr = resHeader + resBody;
+
+                byte[] resData = Encoding.ASCII.GetBytes(resStr);
+
+                client.SendTo(resData, client.RemoteEndPoint);
+
+                client.Close();
             }
         }
     }
