@@ -63,6 +63,7 @@
             this.serverLogsText.Location = new System.Drawing.Point(195, 33);
             this.serverLogsText.Multiline = true;
             this.serverLogsText.Name = "serverLogsText";
+            this.serverLogsText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.serverLogsText.Size = new System.Drawing.Size(635, 524);
             this.serverLogsText.TabIndex = 2;
             // 

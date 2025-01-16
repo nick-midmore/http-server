@@ -43,7 +43,7 @@ namespace HttpServer
                 }
                 catch(Exception ex)
                 {
-                    serverLogsText.Text = "Failed to start server on specified port";
+                    serverLogsText.Text = "Failed to start server on specified port\r\n";
                 }
 
                 thread = new Thread(new ThreadStart(this.ConnectionThread));
@@ -55,14 +55,15 @@ namespace HttpServer
             catch(Exception ex)
             {
                 Console.WriteLine("Error while starting the server");
-                serverLogsText.Text = "Failed to start server";
+                serverLogsText.Text = "Failed to start server\r\n";
             }
 
-            serverLogsText.Text = "Server started...";
+            serverLogsText.Text = "Server started...\r\n";
         }
 
         private void stopServerBtn_Click(object sender, EventArgs e)
         {
+            serverLogsText.Text += "Server stopping...\r\n";
             try
             {
                 httpServer.Close();
@@ -71,6 +72,7 @@ namespace HttpServer
 
                 startServerBtn.Enabled = true;
                 stopServerBtn.Enabled = false;
+                serverLogsText.Text += "Server stopped.\r\n";
             }
             catch(Exception ex)
             {
@@ -99,7 +101,7 @@ namespace HttpServer
             {
                 DateTime time = DateTime.Now;
 
-                String data = "";
+                string data = "";
                 byte[] bytes = new byte[2048];
 
                 Socket client = httpServer.Accept();
@@ -116,7 +118,7 @@ namespace HttpServer
                 serverLogsText.Invoke((MethodInvoker)delegate {
                     serverLogsText.Text += "\r\n\r\n";
                     serverLogsText.Text += data;
-                    serverLogsText.Text += "\n\n -------- End of request --------";
+                    serverLogsText.Text += "\n\n -------- End of request --------\r\n";
                 });
 
                 String resHeader = "HTTP/1.1 200 Ok\nServer: my_http_server\nContent-Type: text/html; charset: UTF-8\n\n";
